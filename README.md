@@ -165,9 +165,6 @@ Then open 👉 **http://localhost/finler** in your browser. 🎉
 ## 🔐 Security & Compliance
 
 - 🛡️ Strict financial guardrails: Finler AI **does not give direct securities or trading advice**.
-- 🔒 Secrets are kept in `.env` (never commit your real `.env` file).
-- 🧱 `.htaccess` provides clean URLs and security rules.
-
 > ⚠️ **Disclaimer:** Finler AI is a budgeting and planning assistant, not a licensed financial advisor.
 
 ---
