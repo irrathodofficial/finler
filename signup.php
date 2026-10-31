@@ -2,13 +2,13 @@
 // signup.php
 require_once 'includes/db.php';
 
+// अगर यूज़र पहले से लॉगिन है, तो उसे सीधा डैशबोर्ड पर भेज दें
 if (isset($_SESSION['user_id'])) {
     header("Location: dashboard.php");
     exit();
 }
 
 $error = '';
-$success = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
     $name = trim($_POST['name']);
@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
     $password = $_POST['password'];
 
     // Strong Password Validation (Regex)
-    // At least 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char
+    // कम से कम 8 अक्षर, 1 कैपिटल लेटर, 1 स्माल लेटर, 1 नंबर और 1 स्पेशल करैक्टर
     $pattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/';
 
     if (empty($name) || empty($email) || empty($password)) {
@@ -30,10 +30,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
         if ($stmt->rowCount() > 0) {
             $error = "Email is already registered.";
         } else {
+            // पासवर्ड को सिक्योर तरीके से हैश करना
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
             $stmt = $pdo->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
+            
             if ($stmt->execute([$name, $email, $hashed_password])) {
-                $success = "Account created successfully! You can now log in.";
+                
+                // --- AUTO-LOGIN LOGIC START ---
+                // नई बनी हुई यूज़र ID लें
+                $new_user_id = $pdo->lastInsertId();
+                
+                // सेशन वेरिएबल्स सेट करें (यूज़र को लॉगिन कर दें)
+                $_SESSION['user_id'] = $new_user_id;
+                $_SESSION['user_name'] = $name;
+                $_SESSION['user_email'] = $email;
+                
+                // सीधा डैशबोर्ड पर रीडायरेक्ट करें
+                header("Location: dashboard.php");
+                exit();
+                // --- AUTO-LOGIN LOGIC END ---
+                
             } else {
                 $error = "Something went wrong. Please try again.";
             }
@@ -41,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
     }
 }
 
-// Google Auth URL Logic (Requires Google API PHP Client Library, simplified for now)
+// Google Auth URL Logic
 $google_client_id = getenv('GOOGLE_CLIENT_ID');
 $redirect_uri = getenv('GOOGLE_REDIRECT_URI');
 $google_auth_url = "https://accounts.google.com/o/oauth2/v2/auth?scope=email%20profile&access_type=online&response_type=code&redirect_uri=".urlencode($redirect_uri)."&client_id=".$google_client_id;
@@ -65,13 +81,8 @@ require_once 'includes/header.php';
             </div>
         <?php endif; ?>
 
-        <?php if ($success): ?>
-            <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-4">
-                <p class="text-green-700 text-sm"><?= htmlspecialchars($success) ?></p>
-            </div>
-        <?php endif; ?>
-
         <div class="mt-8 space-y-6">
+            <!-- Google Sign Up Button -->
             <a href="<?= htmlspecialchars($google_auth_url) ?>" class="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
                 <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5">
                 Sign up with Google
@@ -86,6 +97,7 @@ require_once 'includes/header.php';
                 </div>
             </div>
 
+            <!-- Normal Registration Form -->
             <form class="space-y-5" action="signup.php" method="POST">
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
@@ -105,6 +117,7 @@ require_once 'includes/header.php';
                     <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
                     <div class="mt-1 relative">
                         <input id="password" name="password" type="password" required class="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm pr-10">
+                        <!-- Password Toggle Button -->
                         <button type="button" onclick="togglePassword('password', 'eye-icon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
                             <i id="eye-icon" class="fa-solid fa-eye"></i>
                         </button>
@@ -122,6 +135,7 @@ require_once 'includes/header.php';
     </div>
 </div>
 
+<!-- Password Toggle Script -->
 <script>
 function togglePassword(inputId, iconId) {
     const input = document.getElementById(inputId);
