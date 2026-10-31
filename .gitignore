@@ -1,0 +1,8 @@
+# Ignore environment variables
+.env
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore vendor folders (if you use composer later)
+vendor/
