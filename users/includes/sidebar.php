@@ -1,6 +1,5 @@
 <?php
 // users/includes/sidebar.php
-// Get current page name to highlight the active menu item
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
 <!-- Sidebar -->
@@ -8,7 +7,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <!-- Logo Section -->
     <div class="h-24 flex items-center px-8 border-b border-gray-100">
         <a href="dashboard.php" class="flex items-center">
-            <!-- Make sure the logo path is correct relative to dashboard.php -->
             <img src="assets/images/logo.png" alt="Finler AI" class="h-12 w-auto" onerror="this.outerHTML='<span class=\'font-bold text-2xl text-gray-900 tracking-tight\'>Finler <span class=\'text-indigo-600\'>AI</span></span>'">
         </a>
     </div>
@@ -20,19 +18,27 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
         </a>
 
-        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition text-gray-600 hover:bg-gray-50 hover:text-indigo-600">
-            <i class="fa-brands fa-google w-5"></i> Gmail Sync
-        </a>
+        <!-- Gmail Sync Link - Triggers Modal -->
+        <button onclick="toggleModal('gmailSyncModal')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition text-gray-600 hover:bg-gray-50 hover:text-indigo-600 text-left">
+            <i class="fa-brands fa-google w-5 text-red-500"></i> Gmail Sync
+        </button>
 
-        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition text-gray-600 hover:bg-gray-50 hover:text-indigo-600">
+        <!-- Transactions Page Link -->
+        <a href="transactions.php" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition <?= ($current_page == 'transactions.php') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-indigo-600' ?>">
             <i class="fa-solid fa-list-ul w-5"></i> Transactions
         </a>
 
-        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition text-gray-600 hover:bg-gray-50 hover:text-indigo-600">
-            <i class="fa-solid fa-sliders w-5"></i> Goal Simulator
-        </a>
+        <a href="monthly_report.php" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition <?= ($current_page == 'monthly_report.php') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-indigo-600' ?>">
+    <i class="fa-solid fa-file-invoice-dollar w-5"></i> Monthly Report
+</a>
 
-        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition text-gray-600 hover:bg-gray-50 hover:text-indigo-600">
+        <!-- Goal Simulator Trigger -->
+        <button onclick="toggleModal('whatIfModal')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition text-gray-600 hover:bg-gray-50 hover:text-indigo-600 text-left">
+            <i class="fa-solid fa-sliders w-5"></i> Goal Simulator
+        </button>
+
+        <!-- Settings Link -->
+        <a href="settings.php" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition <?= ($current_page == 'settings.php') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-indigo-600' ?>">
             <i class="fa-solid fa-brain w-5"></i> AI Coach Settings
         </a>
     </nav>
